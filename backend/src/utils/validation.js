@@ -17,21 +17,6 @@ const isNumber = (number) => {
 	return !isNaN(number);
 };
 
-const getIncludesErrors = (includes, validIncludes) => {
-	const formulatedIncludes = includes.split(',');
-
-	let error = false;
-
-	for (const include of formulatedIncludes) {
-		if (!validIncludes.includes(include)) {
-			error = `Can not add this include ${include}`;
-			return error;
-		}
-	}
-
-	return error;
-};
-
 // return error if there is error and false if no error
 const pagination = (params) => {
 	if (typeof params.limit === 'string') params.limit = parseInt(params.limit);
@@ -63,5 +48,4 @@ module.exports = {
 	isNumber,
 	pagination,
 	isValidSlug,
-	getIncludesErrors,
 };
