@@ -1,0 +1,194 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"version": "1.0.0",
+		"title": "Authentication system",
+		"description": "An suthentication system for users."
+	},
+	"tags": [
+		{
+			"name": "Users",
+			"description": "Users endpoints"
+		},
+		{
+			"name": "Roles",
+			"description": "Roles endpoints"
+		},
+		{
+			"name": "Permissions",
+			"description": "Permissions endpoints"
+		}
+	],
+	"paths": {
+		"/users/signup": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Signup endpoint",
+				"operationId": "signup",
+				"requestBody": {
+					"description": "user signup data",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/User"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "boolean",
+											"example": true
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 201
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"_id": {
+													"type": "string",
+													"example": "507f1f77bcf86cd799439011"
+												},
+												"name": {
+													"type": "string",
+													"example": "abdo"
+												},
+												"email": {
+													"type": "string",
+													"example": "abdo@example.com"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request. email:should be unique.password:should NOT have fewer than 8 characters.password:passwords are not the same"
+					}
+				}
+			}
+		},
+		"/users/login": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Login endpoint",
+				"operationId": "login",
+				"requestBody": {
+					"description": "user login data",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string",
+										"example": "john@example.com"
+									},
+									"password": {
+										"type": "string",
+										"example": "john1_3passowrd"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "boolean",
+											"example": "success"
+										}
+									}
+								}
+							}
+						},
+						"headers": {
+							"Set-Cookie": {
+								"schema": {
+									"type": "string",
+									"example": "jwt=abcasfa33asfde12345; Path=/; HttpOnly"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request. Incorrect email or password."
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"User": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"example": "abdo"
+					},
+					"email": {
+						"type": "string",
+						"example": "abdo@example.com"
+					},
+					"password": {
+						"type": "string",
+						"example": "abdo_passowrd"
+					},
+					"passwordConfirm": {
+						"type": "string",
+						"example": "abdo_passowrd"
+					},
+					"role": {
+						"type": "string",
+						"example": "user"
+					}
+				}
+			},
+			"Role": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"example": "admin"
+					}
+				}
+			},
+			"Permission": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"example": "POST"
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"description": "Try it Now",
+			"url": "http://localhost/api/v1/"
+		}
+	]
+}

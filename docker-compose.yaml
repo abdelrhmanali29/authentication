@@ -1,0 +1,15 @@
+version: '3'
+services:
+  redis:
+    image: 'redis:latest'
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    ports:
+      - 80:3000
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+    restart: always
