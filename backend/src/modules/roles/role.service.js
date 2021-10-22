@@ -4,24 +4,39 @@ const validator = require('./role.validation');
 const config = require('../../config/config');
 
 module.exports = {
-	async create(role, next) {
+	async create(role) {
+		let err = false,
+			response = {};
+
 		const { valid, errors } = await validator.sanitation(role);
 		if (!valid) {
-			return next(new AppError('validation failed', 400, errors));
+			err = new AppError('validation failed', 400, errors);
+			return { err, response };
 		}
 
 		const newRole = await repository.create(role);
-		return newRole;
+
+		response = {
+			data: newRole,
+			status: 'success',
+			statusCode: 201,
+		};
+		return { err, response };
 	},
 
-	async list(query, next) {
+	async list(query) {
+		let err = false,
+			response = {};
+
 		const queryPages = {
 			skip: parseInt(query.skip) || parseInt(config.skip),
 			limit: parseInt(query.limit) || parseInt(config.limit),
 		};
 
 		if (!validator.pagination(queryPages)) {
-			return next(new AppError('pagination failed', 400));
+			err = new AppError('pagination failed', 400);
+
+			return { err, response };
 		}
 
 		const pages = {
@@ -33,47 +48,88 @@ module.exports = {
 		Reflect.deleteProperty(query, 'skip');
 
 		const { roles, totalRoles } = await repository.list(query, pages);
+		response = {
+			data: roles,
+			total: totalRoles,
+			status: 'success',
+			statusCode: 200,
+		};
 
-		return { roles, totalRoles };
+		return { err, response };
 	},
 
-	async getById(id, next) {
+	async getById(id) {
+		let err = false,
+			response = {};
+
 		if (!validator.isMongoId(id)) {
-			return next(new AppError('Invalid role id', 400));
+			err = new AppError('Invalid role id', 400);
+			return { err, response };
 		}
 
 		const role = await repository.getById(id);
 
 		if (!role) {
-			return next(new AppError('Role not exist', 404));
+			err = new AppError('Role not exist', 404);
+			return { err, response };
 		}
 
-		return role;
+		response = {
+			data: role,
+			status: 'success',
+			statusCode: 200,
+		};
+		return { err, response };
 	},
 
-	async update(id, role, next) {
+	async update(id, role) {
+		let err = false,
+			response = {};
+
 		if (!validator.isMongoId(id)) {
-			return next(new AppError('Invalid role id', 400));
+			err = new AppError('Invalid role id', 400);
+
+			return { err, response };
 		}
 
 		const { valid, errors } = await validator.sanitation(role);
 		if (!valid) {
-			return next(new AppError('validation failed', 400, errors));
+			err = new AppError('validation failed', 400, errors);
+			return { err, response };
 		}
 
 		const newRole = await repository.update(id, role);
 
-		if (!newRole) return next(new AppError('Role not exist', 404));
-		return newRole;
+		if (!newRole) {
+			err = new AppError('Role not exist', 404);
+			return { err, response };
+		}
+
+		response = {
+			data: newRole,
+			status: 'success',
+			statusCode: 200,
+		};
+
+		return { err, response };
 	},
 
-	async delete(id, next) {
+	async delete(id) {
+		let err = false,
+			response = {};
+
 		if (!validator.isMongoId(id)) {
-			return next(new AppError('Invalid role id', 400));
+			err = new AppError('Invalid role id', 400);
+
+			return { err, response };
 		}
 
 		const isRoleDeleted = await repository.delete(id);
 
-		if (!isRoleDeleted) return next(new AppError('Role not exist', 404));
+		if (!isRoleDeleted) {
+			err = new AppError('Role not exist', 404);
+
+			return { err, response };
+		}
 	},
 };

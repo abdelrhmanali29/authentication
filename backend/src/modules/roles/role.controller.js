@@ -9,46 +9,29 @@ module.exports = {
 				permissions: req.body.permissions,
 			};
 
-			const newRole = await service.create(role, next);
+			const { err, response } = await service.create(role);
 
-			if (newRole) {
-				return res.status(200).json({
-					status: 'success',
-					data: {
-						newRole,
-					},
-				});
-			}
+			if (err) return next(err);
+			res.status(response.statusCode).json(response);
 		});
 	},
 
 	list() {
 		return catchAsync(async (req, res, next) => {
-			const { roles, totalRoles } = await service.list(req.query, next);
+			const { err, response } = await service.list(req.query);
 
-			return res.status(200).json({
-				status: 'success',
-				data: {
-					total: totalRoles,
-					roles,
-				},
-			});
+			if (err) return next(err);
+			res.status(response.statusCode).json(response);
 		});
 	},
 
 	getById() {
 		return catchAsync(async (req, res, next) => {
 			const id = req.params.id;
-			const role = await service.getById(id, next);
+			const { err, response } = await service.getById(id);
 
-			if (role) {
-				return res.status(200).json({
-					status: 'success',
-					data: {
-						role,
-					},
-				});
-			}
+			if (err) return next(err);
+			res.status(response.statusCode).json(response);
 		});
 	},
 
@@ -60,25 +43,20 @@ module.exports = {
 				permissions: req.body.permissions,
 			};
 
-			const newRole = await service.update(id, role, next);
+			const { err, response } = await service.update(id, role);
 
-			if (newRole) {
-				return res.status(200).json({
-					status: 'success',
-					data: {
-						role: newRole,
-					},
-				});
-			}
+			if (err) return next(err);
+			res.status(response.statusCode).json(response);
 		});
 	},
 
 	delete() {
 		return catchAsync(async (req, res, next) => {
 			const id = req.params.id;
-			const isRoleDeleted = await service.delete(id, next);
+			const { err, response } = await service.delete(id);
 
-			if (isRoleDeleted) return res.status(204).json();
+			if (err) return next(err);
+			res.status(response.statusCode).json(response);
 		});
 	},
 };

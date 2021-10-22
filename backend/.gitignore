@@ -107,3 +107,4 @@ dist
 #VSCODE
 .vscode/
 .env.development
+.env.production

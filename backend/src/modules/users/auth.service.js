@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
 const utils = require('./user.utils');
 const User = require('./user.model');
+const roleService = require('../roles/role.service');
 
 module.exports = {
 	async create(user) {
@@ -28,13 +29,18 @@ module.exports = {
 			return { err, response };
 		}
 
-		if (!'role' in user) user.role = 'user';
+		if (!user.hasOwnProperty('role')) user.role = 'user';
 
-		const role = await rolesRepository.findOne({
+		let role = await rolesRepository.findOne({
 			filter: { name: user.role },
 			lean: true,
 		});
-		if (role) user.role = role._id;
+
+		if (!role) {
+			role = await roleService.create(user.role);
+		}
+
+		user.role = role._id;
 
 		const newUser = await repository.save(user);
 		const token = utils.signToken(newUser.id);
@@ -46,10 +52,15 @@ module.exports = {
 
 		response = {
 			token,
-			data: newUser,
+			data: {
+				name: newUser.name,
+				email: newUser.email,
+				id: newUser.id,
+			},
 			status: 'success',
-			statusCode: 200,
+			statusCode: 201,
 		};
+
 		return { err, response };
 	},
 

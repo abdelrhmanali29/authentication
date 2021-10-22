@@ -7,7 +7,6 @@ const errorHandler = require('./middlewares/errorHandler');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../authentication-swagger-api.json');
 const basicAuth = require('express-basic-auth');
-const protect = require('./middlewares/protection');
 const AppError = require('./utils/appError');
 const config = require('../src/config/config');
 const rateLimit = require('express-rate-limit');
@@ -67,13 +66,6 @@ app.use(
 );
 
 // Middlewares
-app.use(
-	cors({
-		origin: '*',
-	}),
-	express.json()
-);
-
 app.use(cors(), express.json());
 
 app.use(compression());
@@ -84,7 +76,6 @@ app.get(
 		users: users,
 		challenge: true,
 	}),
-	protect,
 	swaggerUi.setup(swaggerDocument)
 );
 app.use('/api/v1/', swaggerUi.serve);

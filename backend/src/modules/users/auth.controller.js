@@ -19,7 +19,7 @@ const getCookieOptions = () => {
 module.exports = {
 	signup() {
 		return catchAsync(async (req, res, next) => {
-			const { err, response } = await service.create(req.body);
+			const { err, response } = await authService.create(req.body);
 
 			res.cookie('jwt', response.token, getCookieOptions());
 			response.token = undefined;

@@ -5,7 +5,7 @@ process.on('uncaughtException', (err) => {
 	console.log(err);
 	process.exit(1);
 });
-require('./src/lib/redis');
+
 const app = require('./src/app');
 const config = require('./src/config/config');
 const mongoose = require('mongoose');

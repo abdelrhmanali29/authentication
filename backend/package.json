@@ -6,11 +6,7 @@
 	"scripts": {
 		"start": "NODE_ENV=production node --max-old-space-size=8192 ./server.js",
 		"watch:js": "NODE_ENV=development nodemon -x 'clear;node' server.js",
-		"dev": "NODE_ENV=development npm run watch:ts & npm run watch:js",
-		"build": "tsc -p .",
-		"debug": "ndb server.js",
-		"start:prod": "NODE_ENV=production nodemon ./server.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"dev": "NODE_ENV=development npm run watch:ts & npm run watch:js"
 	},
 	"repository": {
 		"type": "git"
@@ -18,7 +14,6 @@
 	"author": "Abdelrahman Ali",
 	"license": "ISC",
 	"devDependencies": {
-		"ndb": "^1.1.5",
 		"nodemon": "^2.0.7",
 		"prettier": "2.2.1"
 	},
@@ -39,15 +34,11 @@
 		"hpp": "^0.2.3",
 		"joi": "^17.3.0",
 		"jsonwebtoken": "^8.5.1",
-		"lodash": "^4.17.21",
-		"moment": "^2.29.1",
 		"mongoose": "^5.11.8",
 		"mongoose-unique-validator": "^2.0.3",
 		"morgan": "^1.10.0",
 		"nodemailer": "^6.7.0",
-		"redis": "^3.1.2",
 		"swagger-ui-express": "^4.1.6",
-		"util": "^0.12.3",
 		"validator": "^13.5.2",
 		"xss-clean": "^0.1.1"
 	}

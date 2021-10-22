@@ -32,6 +32,7 @@ const config = {
 	emailPort: process.env.EMAIL_PORT,
 
 	dbURI: process.env.DB_URI,
+	testDBURI: process.env.TEST_DB_URI,
 	// 'mongodb://localhost:27017/ecommerce',
 };
 
