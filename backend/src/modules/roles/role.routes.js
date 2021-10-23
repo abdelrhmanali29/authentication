@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require('./role.controller');
 const authController = require('../users/auth.controller');
 
-router.use(authController.restrictTo(['admin']));
+router.use(authController.restrictTo('admin'));
 
 router.route('/').get(controller.list()).post(controller.create());
 

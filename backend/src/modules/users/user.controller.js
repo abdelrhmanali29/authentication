@@ -3,6 +3,15 @@ const catchAsync = require('../../utils/catchAsync');
 const User = require('./user.model');
 
 module.exports = {
+	list() {
+		return catchAsync(async (req, res, next) => {
+			const { err, response } = await service.list(req.query);
+
+			if (err) return next(err);
+			res.status(response.statusCode).json(response);
+		});
+	},
+	
 	getById() {
 		return catchAsync(async (req, res, next) => {
 			const id = req.params.id;

@@ -12,10 +12,10 @@ router.get('/logout', authController.logout());
 // Protect all routes after this middleware
 router.use(authController.protect());
 
-router.patch('/updateMyPassword', authController.updatePassword());
-
+router.get('/', authController.restrictTo('admin'), controller.list());
 router.get('/me', controller.getMe(), controller.getById());
 router.patch('/updateMe', controller.updateMe());
 router.delete('/deleteMe', controller.deleteMe());
+router.patch('/updateMyPassword', authController.updatePassword());
 
 module.exports = router;

@@ -57,8 +57,6 @@ module.exports = {
 				(permission) => permission.name
 			);
 
-			console.log(userPermissions);
-			console.log(req.method);
 
 			if (
 				!roles.includes(req.user.role.name.toString()) &&
@@ -127,6 +125,8 @@ module.exports = {
 			);
 
 			if (err) return next(err);
+			res.cookie('jwt', response.token, getCookieOptions());
+			response.token = undefined;
 			res.status(response.statusCode).json(response);
 		});
 	},

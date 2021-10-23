@@ -159,7 +159,7 @@ module.exports = {
 			return { err, response };
 		}
 
-		// 3- If everything is OK, retrun current use
+		// 5- If everything is OK, retrun current use
 		response = {
 			data: currentUser,
 			status: 'success',
