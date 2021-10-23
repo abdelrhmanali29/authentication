@@ -1,6 +1,6 @@
 # **Authentication system**
 
-## This is a project meant to be used as a starting point for APIs that require user authentication (sign up and sign in). And each user should has a role (user or admin) so based on his role can access some endpoints and perform some operations.
+This is a project meant to be used as a starting point for APIs that require user authentication (sign up and sign in). And each user should has a role (user or admin) so based on his role can access some endpoints and perform some operations.
 
 # Project Setup
 
