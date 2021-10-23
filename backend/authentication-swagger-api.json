@@ -11,12 +11,16 @@
 			"description": "Users endpoints"
 		},
 		{
+			"name": "Users Protected",
+			"description": "Users protected endpoints for logged in users"
+		},
+		{
 			"name": "Roles",
-			"description": "Roles endpoints"
+			"description": "Roles endpoints for admins only"
 		},
 		{
 			"name": "Permissions",
-			"description": "Permissions endpoints"
+			"description": "Permissions endpoints for admins only"
 		}
 	],
 	"paths": {
@@ -45,8 +49,8 @@
 									"type": "object",
 									"properties": {
 										"status": {
-											"type": "boolean",
-											"example": true
+											"type": "string",
+											"example": "success"
 										},
 										"statusCode": {
 											"type": "number",
@@ -72,10 +76,21 @@
 									}
 								}
 							}
+						},
+						"headers": {
+							"Set-Cookie": {
+								"schema": {
+									"type": "string",
+									"example": "jwt=abcasfa33asfde12345; Path=/; HttpOnly"
+								}
+							}
 						}
 					},
 					"400": {
 						"description": "Bad request. email:should be unique.password:should NOT have fewer than 8 characters.password:passwords are not the same"
+					},
+					"500": {
+						"description": "Error in sign up. Try again later."
 					}
 				}
 			}
@@ -86,7 +101,7 @@
 				"summary": "Login endpoint",
 				"operationId": "login",
 				"requestBody": {
-					"description": "user login data",
+					"description": "User login data",
 					"required": true,
 					"content": {
 						"application/json": {
@@ -95,11 +110,11 @@
 								"properties": {
 									"email": {
 										"type": "string",
-										"example": "john@example.com"
+										"example": "abdo@example.com"
 									},
 									"password": {
 										"type": "string",
-										"example": "john1_3passowrd"
+										"example": "abdo1_3passowrd"
 									}
 								}
 							}
@@ -115,8 +130,29 @@
 									"type": "object",
 									"properties": {
 										"status": {
-											"type": "boolean",
+											"type": "string",
 											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"_id": {
+													"type": "string",
+													"example": "507f1f77bcf86cd799439011"
+												},
+												"name": {
+													"type": "string",
+													"example": "abdo"
+												},
+												"email": {
+													"type": "string",
+													"example": "abdo@example.com"
+												}
+											}
 										}
 									}
 								}
@@ -132,7 +168,932 @@
 						}
 					},
 					"400": {
-						"description": "Bad request. Incorrect email or password."
+						"description": "Incorrect email or password. / Please provide email and password!"
+					},
+					"500": {
+						"description": "Error in login. Please log in again."
+					}
+				}
+			}
+		},
+		"/users/forgetPassword": {
+			"post": {
+				"tags": ["Users"],
+				"summary": "Forget password endpoint",
+				"operationId": "forgetPassword",
+				"requestBody": {
+					"description": "User email",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string",
+										"example": "abdo@example.com"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"message": {
+											"type": "object",
+											"example": "Token sent to email!"
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "There is no user with email address."
+					},
+					"500": {
+						"description": "There was an error sending the email. Try again later!"
+					}
+				}
+			}
+		},
+		"/users/resetPassword/{resetToken}": {
+			"patch": {
+				"tags": ["Users"],
+				"summary": "Reset password endpoint",
+				"operationId": "resetPassword",
+				"requestBody": {
+					"description": "User new password and new password confirm",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"password": {
+										"type": "string",
+										"example": "newPass1234"
+									},
+									"passwordConfirm": {
+										"type": "string",
+										"example": "newPass1234"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Should support password and password confirm. / Token is invalid or has expired. / Password not the same."
+					},
+					"500": {
+						"description": "Error in login. Please log in again."
+					}
+				}
+			}
+		},
+		"/users/logout": {
+			"post": {
+				"tags": ["Users Protected"],
+				"summary": "Logout endpoint",
+				"operationId": "logout",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					}
+				}
+			}
+		},
+		"/users/me": {
+			"get": {
+				"tags": ["Users Protected"],
+				"summary": "User profile endpoint",
+				"operationId": "me",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"_id": {
+													"type": "string",
+													"example": "507f1f77bcf86cd799439011"
+												},
+												"name": {
+													"type": "string",
+													"example": "abdo"
+												},
+												"email": {
+													"type": "string",
+													"example": "abdo@example.com"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/updateMe": {
+			"patch": {
+				"tags": ["Users Protected"],
+				"summary": "User profile update endpoint",
+				"operationId": "updateMe",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "user update data",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/User"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"_id": {
+													"type": "string",
+													"example": "507f1f77bcf86cd799439011"
+												},
+												"name": {
+													"type": "string",
+													"example": "abdo"
+												},
+												"email": {
+													"type": "string",
+													"example": "abdo@example.com"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "This route is not for password updates. / validation failed."
+					}
+				}
+			}
+		},
+		"/users/deleteMe": {
+			"patch": {
+				"tags": ["Users Protected"],
+				"summary": "User profile delete endpoint",
+				"operationId": "deleteMe",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid token, Please log in again."
+					}
+				}
+			}
+		},
+		"/users/updateMyPassword": {
+			"patch": {
+				"tags": ["Users Protected"],
+				"summary": "User update profile password endpoint",
+				"operationId": "updateMyPassword",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "User new password and new password confirm",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"password": {
+										"type": "string",
+										"example": "newPass1234"
+									},
+									"passwordConfirm": {
+										"type": "string",
+										"example": "newPass1234"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Should support password and password confirm. / Token is invalid or has expired. / Password not the same."
+					},
+					"500": {
+						"description": "Error in login. Please log in again."
+					}
+				}
+			}
+		},
+		"/roles": {
+			"get": {
+				"tags": ["Roles"],
+				"summary": "Roles endpoint",
+				"operationId": "roles",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"$ref": "#/components/schemas/Role"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					}
+				}
+			},
+			"post": {
+				"tags": ["Roles"],
+				"summary": "Roles create endpoint",
+				"operationId": "postRole",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "Role creation endpoint",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"example": "user"
+									},
+									"permissions": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"example": "61716572fafb49031d4965e8"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"_id": {
+													"type": "string",
+													"example": "507f1f77bcf86cd799439011"
+												},
+												"name": {
+													"type": "string",
+													"example": "abdo"
+												},
+												"permissions": {
+													"type": "array",
+													"items": {
+														"type": "string",
+														"example": "61716572fafb49031d4965e8"
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					}
+				}
+			}
+		},
+		"/roles/{roleId}": {
+			"get": {
+				"tags": ["Roles"],
+				"summary": "Role by ID endpoint",
+				"operationId": "roleById",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "object",
+											"$ref": "#/components/schemas/Role"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					}
+				}
+			},
+			"patch": {
+				"tags": ["Roles"],
+				"summary": "Role update endpoint",
+				"operationId": "patchRole",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "Role update endpoint",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"example": "user"
+									},
+									"permissions": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"example": "61716572fafb49031d4965e8"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"_id": {
+													"type": "string",
+													"example": "507f1f77bcf86cd799439011"
+												},
+												"name": {
+													"type": "string",
+													"example": "abdo"
+												},
+												"permissions": {
+													"type": "array",
+													"items": {
+														"type": "string",
+														"example": "61716572fafb49031d4965e8"
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					}
+				}
+			},
+			"delete": {
+				"tags": ["Roles"],
+				"summary": "Delete Role by ID endpoint",
+				"operationId": "deleteRoleById",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					},
+					"404": {
+						"description": "Role not found."
+					}
+				}
+			}
+		},
+		"/permissions": {
+			"get": {
+				"tags": ["Permissions"],
+				"summary": "Permissions endpoint",
+				"operationId": "permissions",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"$ref": "#/components/schemas/Permission"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					}
+				}
+			},
+			"post": {
+				"tags": ["Permissions"],
+				"summary": "Permissions create endpoint",
+				"operationId": "postPermission",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "Permission creation endpoint",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"enum": ["GET", "POST", "PATCH", "DELETE"],
+										"example": "GET"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"_id": {
+													"type": "string",
+													"example": "507f1f77bcf86cd799439011"
+												},
+												"name": {
+													"type": "string",
+													"enum": ["GET", "POST", "PATCH", "DELETE"],
+													"example": "GET"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					}
+				}
+			}
+		},
+		"/permissions/{permissionId}": {
+			"get": {
+				"tags": ["Permissions"],
+				"summary": "Permission by ID endpoint",
+				"operationId": "permissionById",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "object",
+											"$ref": "#/components/schemas/Permission"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					},
+					"404": {
+						"description": "Permission not found."
+					}
+				}
+			},
+			"patch": {
+				"tags": ["Permissions"],
+				"summary": "Permission update endpoint",
+				"operationId": "patchPermission",
+				"requestBody": {
+					"description": "Role update endpoint",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"example": "user"
+									},
+									"permissions": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"example": "61716572fafb49031d4965e8"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										},
+										"data": {
+											"type": "object",
+											"properties": {
+												"_id": {
+													"type": "string",
+													"example": "507f1f77bcf86cd799439011"
+												},
+												"name": {
+													"type": "string",
+													"enum": ["GET", "POST", "PATCH", "DELETE"],
+													"example": "POST"
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					},
+					"404": {
+						"description": "Permission not found."
+					}
+				}
+			},
+			"delete": {
+				"tags": ["Permissions"],
+				"summary": "Delete Permission by ID endpoint",
+				"operationId": "deletePermissionById",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "string",
+											"example": "success"
+										},
+										"statusCode": {
+											"type": "number",
+											"example": 200
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Invalid token, Please log in again."
+					},
+					"403": {
+						"description": "You do not have permission to perform this action."
+					},
+					"404": {
+						"description": "Permission not found."
 					}
 				}
 			}
@@ -179,9 +1140,17 @@
 				"properties": {
 					"name": {
 						"type": "string",
+						"enum": ["GET", "POST", "PATCH", "DELETE"],
 						"example": "POST"
 					}
 				}
+			}
+		},
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
 			}
 		}
 	},
