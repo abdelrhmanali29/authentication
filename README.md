@@ -41,6 +41,7 @@ This is a project meant to be used as a starting point for APIs that require use
 6. User will reset his passwrod after receiving reset token via email by `/users/resetPAssword/:token`
 7. Admin can create roles and permissions
 8. Admin can set role for specific user
+**(NOTE)**: first off all you must create user and set his role with 'admin'
 
 ## How to ...?
 
