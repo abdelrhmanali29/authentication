@@ -8,6 +8,7 @@ This is a project meant to be used as a starting point for APIs that require use
 
 - install docker
 - install docker-compose
+- MongoDB database
 
 ## To run project locally:
 
