@@ -48,13 +48,9 @@ This is a project meant to be used as a starting point for APIs that require use
 ### Protect endpoints
 
 - check if token is provided
-
 - Verfication token if not valid it will
-
 - Check if user still exists
-
 - Check if user changed password after the token was issued
-
 - If everything is OK, retrun current use
 
 ### Restrict endpoints
